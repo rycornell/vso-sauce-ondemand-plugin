@@ -73,35 +73,17 @@ sharedConfig.onBuildChanged(async function(build) {
     $table.append('<thead><tr><th align="left">Job Name</th><th align="left">OS/Browser</th><th align="left">Pass/Fail</th><th align="left">Job Links</th></tr></thead>');
     buildFullJobs.forEach(job => {
       const auth = authResults.shift();
+      const videoHref = auth['video'].replace('saucelabs.com', 'assets.saucelabs.com').replace('.flv','.mp4');
+      const logsHref = auth['selenium-server.log'].replace('saucelabs.com', 'assets.saucelabs.com');
       const $tr = $('<tr>');
-      $tr.append($('<td>').append(
-        $('<a>')
-          .attr('href', '#')
-          .text(job.name)
-          .click(function(e) {
-            e.preventDefault();
-            var dialogOptions = {
-              title: 'Test Information',
-              width: 1000,
-              height: 700,
-              urlReplacementObject: {
-                auth: encodeURIComponent(`${auth['job-embed']}&height=600&width=945`)
-              }
-            };
-            VSS.getService(VSS.ServiceIds.Dialog).then(function(dialogService) {
-              var extensionCtx = VSS.getExtensionContext();
-              var contributionId = extensionCtx.publisherId + '.' + extensionCtx.extensionId + '.embed-dialog';
-              dialogService.openDialog(contributionId, dialogOptions);
-            });
-          })
-      ));
+      $tr.append($('<td>').text(job.name));
       $tr.append($('<td>').text(job.os + ' ' + job.browser));
       $tr.append($('<td>').text(job.consolidated_status));
       $tr.append(
         $('<td>')
-          .append($('<a download>').attr('href', auth['video']).text('Video'))
+          .append($('<a download>').attr('href', videoHref).text('Video'))
           .append(' - ')
-          .append($('<a download>').attr('href', auth['selenium-server.log']).text('Logs'))
+          .append($('<a download>').attr('href', logsHref).text('Logs'))
       );
       $table.append($tr);
     });
